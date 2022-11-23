@@ -1,10 +1,37 @@
 const express = require("express");
-const connect = require("./config/database");
+const { connect, config } = require("./config/config");
 const app = express();
+const cors = require("cors");
+const Role = require("./models/Role");
+const roles = require("./roles/roles");
 require("dotenv").config();
 
-connect().catch((err) => console.log(err));
+// modifiy origin when integrating with frontend
+const options = {
+  origin: config.origin,
+};
 
+const initial = () => {
+  Role.estimatedDocumentCount((err, count) => {
+    if (!err && count === 0) {
+      new Role({
+        name: roles.Customer,
+      }).save();
+      new Role({
+        name: roles.Admin,
+      }).save();
+      new Role({
+        name: roles.Employee,
+      }).save();
+    }
+  });
+};
+
+connect()
+  .then(() => initial())
+  .catch((err) => console.log(err));
+
+app.use(cors(options));
 app.use(express.json());
 
 app.get("/", (req, res) => {
