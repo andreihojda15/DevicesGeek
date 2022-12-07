@@ -4,9 +4,11 @@ const app = express();
 const cors = require("cors");
 const Role = require("./models/Role");
 const roles = require("./roles/roles");
+const authRoutes = require("./routes/auth.routes");
+const userRoutes = require("./routes/user.routes");
 require("dotenv").config();
 
-// modifiy origin when integrating with frontend
+// TO-DO: modifiy origin when integrating with frontend
 const options = {
   origin: config.origin,
 };
@@ -33,6 +35,9 @@ connect()
 
 app.use(cors(options));
 app.use(express.json());
+
+authRoutes(app);
+userRoutes(app);
 
 app.get("/", (req, res) => {
   return res.send(`Hi from root!`);
